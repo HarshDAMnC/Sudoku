@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    table { border-collapse: collapse; }
+    td input {
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+<table id="grid"></table>
+<button onclick="solve()">Solve</button>
+
+<script>
+const grid = document.getElementById("grid");
+
+for (let i = 0; i < 9; i++) {
+  let row = grid.insertRow();
+  for (let j = 0; j < 9; j++) {
+    let cell = row.insertCell();
+    cell.innerHTML = `<input maxlength="1">`;
+  }
+}
+
+function solve() {
+  let board = [];
+  for (let i = 0; i < 9; i++) {
+    board[i] = [];
+    for (let j = 0; j < 9; j++) {
+      let val = grid.rows[i].cells[j].children[0].value;
+      board[i][j] = val === "" ? 0 : parseInt(val);
+    }
+  }
+
+  fetch("http://127.0.0.1:5000/solve", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify(board)
+  })
+  .then(res => res.json())
+  .then(data => {
+    for (let i = 0; i < 9; i++)
+      for (let j = 0; j < 9; j++)
+        grid.rows[i].cells[j].children[0].value = data[i][j];
+  });
+}
+</script>
+
+</body>
+</html>
